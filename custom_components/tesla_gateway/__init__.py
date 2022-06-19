@@ -8,19 +8,16 @@ import voluptuous as vol
 import teslapy
 
 from homeassistant.const import (
-    CONF_USERNAME,
-    CONF_PASSWORD
+    CONF_USERNAME
     )
 import homeassistant.helpers.config_validation as cv
-
-DOMAIN = 'tesla_gateway'
+from .const import DOMAIN
 
 _LOGGER = logging.getLogger(__name__)
 
 CONFIG_SCHEMA = vol.Schema({
     DOMAIN: vol.Schema({
-        vol.Required(CONF_USERNAME): cv.string,
-        vol.Required(CONF_PASSWORD): cv.string
+        vol.Required(CONF_USERNAME): cv.string
     }),
 }, extra=vol.ALLOW_EXTRA)
 
@@ -29,9 +26,8 @@ def async_setup(hass, config):
 
     domain_config = config[DOMAIN]
     conf_user = domain_config[CONF_USERNAME]
-    conf_password = domain_config[CONF_PASSWORD]
     
-    tesla = teslapy.Tesla(domain_config[CONF_USERNAME], domain_config[CONF_PASSWORD])
+    tesla = teslapy.Tesla(domain_config[CONF_USERNAME])
 
     def get_battery():
         batteries = tesla.battery_list()

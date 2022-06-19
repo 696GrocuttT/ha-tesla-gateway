@@ -3,7 +3,7 @@
     "error": {},
     "step": {
       "user": {
-        "data": { "username": "Tesla Username", "password": "Tesla Password" },
+        "data": { "username": "Tesla Username" },
         "description": "Enter your Tesla Gatway details.",
         "title": "Authentication"
       }

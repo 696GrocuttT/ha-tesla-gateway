@@ -1,7 +1,7 @@
 from typing import Any, Dict, Optional
 
 from homeassistant import config_entries
-from homeassistant.const import CONF_PASSWORD, CONF_USERNAME
+from homeassistant.const import CONF_USERNAME
 import homeassistant.helpers.config_validation as cv
 import voluptuous as vol
 
@@ -10,7 +10,6 @@ from .const import DOMAIN
 AUTH_SCHEMA = vol.Schema(
     {
         vol.Required(CONF_USERNAME): cv.string,
-        vol.Optional(CONF_PASSWORD): cv.string,
     }
 )
 
