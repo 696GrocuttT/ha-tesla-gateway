@@ -15,3 +15,16 @@ set_reserve:
     backup_reserve_percent:
       description: Percentage of battery reserved for outages
       example: 70
+set_tariff:
+  description: >
+    Sets the tariff details to be used in time based control mode
+  fields:
+    default_prices:
+      description: The default prices in the format "<buy>, <sell>"
+      example: "0.29, 0.1"
+    tariff_periods:
+      description: The prices for different time periods
+      example: {"0.29, 0.29": [ [18000, 36000], [57600, 75600] ]}
+    provider:
+      description: The name of your electricity provider
+      example: "My electricity co"
