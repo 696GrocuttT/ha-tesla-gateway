@@ -8,6 +8,9 @@ set_operation:
     backup_reserve_percent:
       description: Percentage of battery reserved for outages
       example: 10
+    offset:
+      description: Used instead of backup_reserve_percent to specify the reserve as an offset from the current charge level
+      example: 1
 set_reserve:
   description: >
     Changes battery reserve percent
@@ -15,6 +18,9 @@ set_reserve:
     backup_reserve_percent:
       description: Percentage of battery reserved for outages
       example: 70
+    offset:
+      description: Used instead of backup_reserve_percent to specify the reserve as an offset from the current charge level
+      example: 1
 set_tariff:
   description: >
     Sets the tariff details to be used in time based control mode
