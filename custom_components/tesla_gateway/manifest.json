@@ -7,6 +7,6 @@
   "domain": "tesla_gateway",
   "name": "Tesla Gateway",
   "version": "0.1.0",
-  "requirements": ["teslapy @ git+https://github.com/696GrocuttT/teslapy.git@local_v2.6.0_1#egg=teslapy"],
+  "requirements": ["teslapy @ git+https://github.com/696GrocuttT/teslapy.git@master#egg=teslapy"],
   "iot_class": "cloud_polling"
 }
