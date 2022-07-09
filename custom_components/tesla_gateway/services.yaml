@@ -20,11 +20,21 @@ set_tariff:
     Sets the tariff details to be used in time based control mode
   fields:
     default_prices:
-      description: The default prices in the format "<buy>, <sell>"
-      example: "0.29, 0.1"
+      description: The default prices in the format "<buy> <sell> <name>"
+      example: "0.29 0.1 OFF_PEAK"
     tariff_periods:
       description: The prices for different time periods
-      example: {"0.29, 0.29": [ [18000, 36000], [57600, 75600] ]}
+      example: {"0.29 0.29 ON_PEAK": [ [18000, 36000], [57600, 75600] ]}
     provider:
       description: The name of your electricity provider
       example: "My electricity co"
+set_import_export:
+  description: >
+    Changes the grid import and export settings
+  fields:
+    allow_grid_charging:
+      description: Whether to allow charging the battery from the grid
+      example: true
+    allow_battery_export:
+      description: Whether to allow exporting to the grid from the battery
+      example: false

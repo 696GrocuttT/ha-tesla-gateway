@@ -75,23 +75,41 @@ def async_setup(hass, config):
         
     hass.services.async_register(DOMAIN, 'set_tariff', set_tariff_wrap)
 
+    @asyncio.coroutine
+    async def set_import_export(service):
+        
+        battery = await hass.async_add_executor_job(get_battery)
+        if not battery:
+            _LOGGER.warning('Battery object is None')
+            return None
+            
+        await hass.async_add_executor_job(battery.set_import_export,
+                                          allow_grid_charging  = service.data.get('allow_grid_charging',  default=None),
+                                          allow_battery_export = service.data.get('allow_battery_export', default=None))
+
+    hass.services.async_register(DOMAIN, 'set_import_export', set_import_export)
+
     return True
 
 
 async def set_tariff(hass, battery, service):
     rawTariff     = service.data['tariff_periods']
-    parseRateStr  = lambda t: tuple([float(x) for x in t.split(" ")])
+    
+    def parseRateStr(rateStr):
+        rateParts = rateStr.split(" ")
+        return (float(rateParts[0]), float(rateParts[1]), rateParts[2])
+    
     secondsToTime = lambda s: time(hour=s//3600, minute=(s%3600)//60, second=(s%3600)%60)
     periods       = []
     for curRateStr in rawTariff:
         curRate    = parseRateStr(curRateStr)
-        periodCost = teslapy.BatteryTariffPeriodCost(curRate[0], curRate[1])
+        periodCost = teslapy.BatteryTariffPeriodCost(curRate[0], curRate[1], curRate[2])
         for period in rawTariff[curRateStr]:
             period = teslapy.BatteryTariffPeriod(periodCost, secondsToTime(period[0]), secondsToTime(period[1]))
             periods.append(period)
 
     defCost    = parseRateStr(service.data['default_prices'])
-    defCost    = teslapy.BatteryTariffPeriodCost(defCost[0], defCost[1])
+    defCost    = teslapy.BatteryTariffPeriodCost(defCost[0], defCost[1], defCost[2])
     planName   = "Autogen @ {0:%H:%M}".format(datetime.now())
     tariffDict = teslapy.Battery.create_tariff(defCost, periods, service.data['provider'], planName)
     await hass.async_add_executor_job(battery.set_tariff, tariffDict)
