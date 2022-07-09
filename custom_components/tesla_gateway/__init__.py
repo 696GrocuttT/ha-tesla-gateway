@@ -94,10 +94,10 @@ def async_setup(hass, config):
         if not battery:
             _LOGGER.warning('Battery object is None')
             return None
-            
+
         await hass.async_add_executor_job(battery.set_import_export,
-                                          allow_grid_charging  = service.data.get('allow_grid_charging',  default=None),
-                                          allow_battery_export = service.data.get('allow_battery_export', default=None))
+                                          service.data.get('allow_grid_charging',  None),
+                                          service.data.get('allow_battery_export', None))
 
     hass.services.async_register(DOMAIN, 'set_import_export', set_import_export)
 
