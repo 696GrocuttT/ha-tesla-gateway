@@ -51,7 +51,9 @@ def async_setup(hass, config):
         elif 'offset' in service.data:
             battery_data = await hass.async_add_executor_job(battery.get_battery_data)
             if 'percentage_charged' in battery_data:
-                reserve = service.data['offset'] + battery_data['percentage_charged']
+                charge  = (float(battery_data['energy_left']) / float(battery_data['total_pack_energy'])) * 100
+                charge  = int(round(charge))
+                reserve = service.data['offset'] + charge
                 reserve = max(0, min(100, reserve))
                 await hass.async_add_executor_job(battery.set_backup_reserve_percent, reserve)
 
@@ -70,7 +72,9 @@ def async_setup(hass, config):
         elif 'offset' in service.data:
             battery_data = await hass.async_add_executor_job(battery.get_battery_data)
             if 'percentage_charged' in battery_data:
-                reserve = service.data['offset'] + battery_data['percentage_charged']
+                charge  = (float(battery_data['energy_left']) / float(battery_data['total_pack_energy'])) * 100
+                charge  = int(round(charge))
+                reserve = service.data['offset'] + charge
                 reserve = max(0, min(100, reserve))
                 await hass.async_add_executor_job(battery.set_backup_reserve_percent, reserve)
 
