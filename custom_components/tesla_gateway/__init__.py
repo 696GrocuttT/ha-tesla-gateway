@@ -49,10 +49,8 @@ def async_setup(hass, config):
         if 'backup_reserve_percent' in service.data:
             await hass.async_add_executor_job(battery.set_backup_reserve_percent, service.data['backup_reserve_percent'])
         elif 'offset' in service.data:
-            battery_data = await hass.async_add_executor_job(battery.get_battery_data)
-            if 'percentage_charged' in battery_data:
-                charge  = (float(battery_data['energy_left']) / float(battery_data['total_pack_energy'])) * 100
-                charge  = int(round(charge))
+            charge = await get_charge(hass, battery)
+            if charge:
                 reserve = service.data['offset'] + charge
                 reserve = max(0, min(100, reserve))
                 await hass.async_add_executor_job(battery.set_backup_reserve_percent, reserve)
@@ -70,10 +68,8 @@ def async_setup(hass, config):
         if 'backup_reserve_percent' in service.data:
             await hass.async_add_executor_job(battery.set_backup_reserve_percent, service.data['backup_reserve_percent'])
         elif 'offset' in service.data:
-            battery_data = await hass.async_add_executor_job(battery.get_battery_data)
-            if 'percentage_charged' in battery_data:
-                charge  = (float(battery_data['energy_left']) / float(battery_data['total_pack_energy'])) * 100
-                charge  = int(round(charge))
+            charge = await get_charge(hass, battery)
+            if charge:
                 reserve = service.data['offset'] + charge
                 reserve = max(0, min(100, reserve))
                 await hass.async_add_executor_job(battery.set_backup_reserve_percent, reserve)
@@ -130,3 +126,22 @@ async def set_tariff(hass, battery, service):
         tariffDict = teslapy.Battery.create_tariff(defCost, periods, service.data['provider'], planName)
         await hass.async_add_executor_job(battery.set_tariff, tariffDict)
         
+        
+async def get_charge(hass, battery):
+    # Due to some fudge factors that Tesla apply, we need to calculate the state of charge
+    # from the energy values, however every now and then we get screwed up data from the api
+    # and the energy is reported as 0. To get around this we make sure it's close ish to the
+    # reported charge level and retry if not. We only allow 5 attempts just in case.
+    finalSoc = None
+    for _ in range(5):
+        batData = await hass.async_add_executor_job(battery.get_battery_data)
+        if ( ('energy_left'        in batData) and
+             ('total_pack_energy'  in batData) and
+             ('percentage_charged' in batData) ):
+            calcSoc     = (float(batData['energy_left']) / float(batData['total_pack_energy'])) * 100
+            calcSoc     = int(round(calcSoc))
+            reportedSoc = batData['percentage_charged']
+            if abs(calcSoc - reportedSoc) < 10: 
+                finalSoc = calcSoc
+                break
+    return finalSoc
