@@ -22,8 +22,7 @@ CONFIG_SCHEMA = vol.Schema({
     }),
 }, extra=vol.ALLOW_EXTRA)
 
-@asyncio.coroutine
-def async_setup(hass, config):
+async def async_setup(hass, config):
 
     domain_config = config[DOMAIN]
     conf_user = domain_config[CONF_USERNAME]
@@ -37,7 +36,6 @@ def async_setup(hass, config):
         else:
             return None
 
-    @asyncio.coroutine
     async def set_operation(service):
         
         battery = await hass.async_add_executor_job(get_battery)
@@ -57,7 +55,6 @@ def async_setup(hass, config):
 
     hass.services.async_register(DOMAIN, 'set_operation', set_operation)
 
-    @asyncio.coroutine
     async def set_reserve(service):
         
         battery = await hass.async_add_executor_job(get_battery)
@@ -76,7 +73,6 @@ def async_setup(hass, config):
 
     hass.services.async_register(DOMAIN, 'set_reserve', set_reserve)
 
-    @asyncio.coroutine
     async def set_tariff_wrap(service):   
         battery = await hass.async_add_executor_job(get_battery)
         if not battery:
@@ -87,7 +83,6 @@ def async_setup(hass, config):
         
     hass.services.async_register(DOMAIN, 'set_tariff', set_tariff_wrap)
 
-    @asyncio.coroutine
     async def set_import_export(service):
         
         battery = await hass.async_add_executor_job(get_battery)
