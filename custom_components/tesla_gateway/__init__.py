@@ -27,7 +27,7 @@ async def async_setup(hass, config):
     domain_config = config[DOMAIN]
     conf_user = domain_config[CONF_USERNAME]
     
-    tesla = teslapy.Tesla(domain_config[CONF_USERNAME])
+    tesla = teslapy.Tesla(domain_config[CONF_USERNAME], timeout=20, retry=20)
 
     def get_battery():
         batteries = tesla.battery_list()
